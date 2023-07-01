@@ -1,0 +1,117 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<AP.MyTreeFarm.Application.CQRS.Employees.EmployeeDTO>
+
+@{
+    ViewData["Title"] = "Werknemers";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        @if (TempData["AlertSuccess"] != null)
+         {
+             <div class="alert alert-success" role="alert">
+                 @TempData["AlertSuccess"]
+             </div>
+         }
+        
+        @if (TempData["AlertError"] != null)
+         {
+             <div class="alert alert-danger" role="alert">
+                 @TempData["AlertError"]
+             </div>
+         }
+        <div class="col-6 mb-3">
+            <h2 class="text-primary">Werknemers</h2>
+            <a asp-controller="Employee" asp-action="Create" class="btn btn-primary">Werknemer toevoegen</a>
+        </div>
+    </div>
+    <div class="mb-2">
+        <form asp-controller="Employee" asp-action="Index">
+            <div class="input-group mb-3">
+                <input type="search" placeholder="Zoek op naam" name="searchBox" class="form-control"/>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-secondary" asp-route-currentFilter= "@ViewBag.CurrentFilter">Zoek</button>
+                    <button asp-controller="Employee" asp-action="Index" class="btn btn-outline-secondary">Alle werknemers</button>
+                </div>
+            </div>
+        </form>
+    </div>
+        @if(Model.Any())
+        {
+            <table class="table table-bordered table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByEmployeeId" asp-route-currentFilter= "@ViewBag.CurrentFilter">Personeelsnummer</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByEmployeeName" asp-route-currentFilter= "@ViewBag.CurrentFilter">Naam</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByEmail" asp-route-currentFilter= "@ViewBag.CurrentFilter">Email</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByAdmin" asp-route-currentFilter= "@ViewBag.CurrentFilter">Admin</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByActive" asp-route-currentFilter= "@ViewBag.CurrentFilter">Actief</a>
+                    </th>
+                    <th>
+                        Acties
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach(var employee in Model)
+                {
+                    <tr>
+                        <td>@employee.EmployeeId</td>
+                        <td>@employee.FirstName @employee.LastName</td>
+                        <td>@employee.Email</td>
+                        <td>@( employee.IsAdmin ? "Ja" : "Nee" )</td>
+                        <td>@( employee.IsActive ? "Ja" : "Nee" )</td>
+                        <td>
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Employee" asp-action="Detail" asp-route-Id="@employee.Id" class="btn btn-success mx-1">Details</a>
+                                <a asp-controller="Employee" asp-action="Update" asp-route-Id="@employee.Id" class="btn btn-primary mx-1">Update</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            
+            <p class="text-muted">Totaal aantal werknemers: @Model.TotalItemCount</p>
+        
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortBy = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }),
+
+                new PagedListRenderOptions()
+
+                {
+                    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                    DisplayItemSliceAndTotal = false,
+
+                    ContainerDivClasses = new[] { "navigation" },
+
+                    LiElementClasses = new[] { "page-item" },
+
+                    PageClasses = new[] { "page-link" },
+
+                })
+        }
+        else
+        {
+            <p>Geen werknemers gevonden!</p>
+        }
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}

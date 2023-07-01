@@ -1,0 +1,76 @@
+﻿@using FluentValidation.Results
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model CreateTaskVM
+
+@{
+    ViewData["Title"] = "Aanmaken taak";
+}
+
+
+
+<h2 class="text-primary"> Taak toevoegen</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+
+<form asp-controller="Dashboard" asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="treeTask.Name">Naam</label>
+        <input asp-for="treeTask.Name" class="form-control"/>
+        <span class="text-danger" asp-validation-for="treeTask.Name"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="treeTask.Description">Uitleg</label>
+        <textarea asp-for="treeTask.Description" class="form-control"></textarea>
+        <span class="text-danger" asp-validation-for="treeTask.Description"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="treeTask.Priority">Prioriteit</label>
+        <input asp-for="treeTask.Priority" type="number" class="form-control"></input>
+        <span class="text-danger" asp-validation-for="treeTask.Priority"></span>
+    </div>
+    <div class="mb-3">
+            <label class="form-label" asp-for="treeTask.DatePlanned">Geplande datum</label>
+            <input type = "date" asp-for="treeTask.DatePlanned" class="form-control"/>
+        <span class="text-danger" asp-validation-for="treeTask.DatePlanned" ></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="treeTask.Duration">Duur (min)</label>
+        <input asp-for="treeTask.Duration" class="form-control"/>
+        <span class="text-danger" asp-validation-for="treeTask.Duration"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selecteer werknemer</label>
+        <select class="form-select mb-1" d asp-items="Model.employees" asp-for="treeTask.EmployeeId">
+            <option value="TEST"></option>
+        </select>
+        <a asp-controller="Employee" asp-action="Create" class="btn btn-info text-light">Werknemer aanmaken</a>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selecteer zone</label>
+        <select class="form-select mb-1" asp-items="Model.zones" asp-for="treeTask.ZoneId"></select>
+        <a asp-controller="Site" asp-action="Index" class="btn btn-info text-light">Zone aanmaken</a>
+    </div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-75">Maak aan</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+        </div>
+    </div>
+</form>

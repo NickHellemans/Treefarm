@@ -1,0 +1,67 @@
+﻿@model AP.MyTreeFarm.Application.CQRS.Sites.CreateSiteDTO
+@using FluentValidation.Results
+
+
+@{
+    ViewData["Title"] = "Aanmaken site";
+}
+
+<h2 class="text-primary"> Site toevoegen</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+<form method="post" asp-controller="Site" asp-action="Create" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label" asp-for="Name">Naam</label>
+        <input asp-for="Name" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="PostalCode">Postcode</label>
+        <input asp-for="PostalCode" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="PostalCode"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Street">Straat</label>
+        <input asp-for="Street" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="Street"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="StreetNumber">Huisnummer</label>
+        <input asp-for="StreetNumber" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="StreetNumber"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Plattegrond (.jpg/.png/.jpeg)</label>
+        <input type="file" class="form-control" name="mapFile"/>
+        <span class="text-danger" asp-validation-for="MapPicturePath"></span>
+
+    </div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-75">Maak aan</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+

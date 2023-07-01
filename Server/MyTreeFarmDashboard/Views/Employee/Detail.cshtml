@@ -1,0 +1,227 @@
+﻿@using X.PagedList.Web.Common
+@using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model EmployeeVM
+@using TaskStatus = AP.MyTreeFarm.Domain.TaskStatus
+
+@{
+    ViewData["Title"] = "Detail Werknemer";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">@Model.Employee.FirstName @Model.Employee.LastName</h2>
+            <a asp-controller="Employee" asp-action="Update" asp-route-Id="@Model.Employee.Id" class="btn btn-primary">Update</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEmployeeModal">
+                Verwijder
+            </button>
+        </div>
+    </div>
+    <br/>
+    <table class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        <tr>
+            <th>
+                Personeelsnummer
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Admin
+            </th>
+            <th>
+                Actief
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>@Model.Employee.EmployeeId</td>
+            <td>@Model.Employee.Email</td>
+            <td>@(Model.Employee.IsAdmin ? "Ja" : "Nee")</td>
+            <td>@(Model.Employee.IsActive ? "Ja" : "Nee")</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3 class="text-primary">Takenlijst</h3>
+    <a asp-controller="Dashboard" asp-action="Create" asp-route-employeeId="@Model.Employee.Id" class="btn btn-primary mx-1">Taak toevoegen</a>
+            <p class="text-muted">Totaal aantal taken: @Model.PagedTasks.TotalItemCount</p>
+    <div class="float-end me-2">
+        <a asp-controller="Employee" asp-action="Detail" asp-route-id="@Model.Employee.Id" class=" btn btn-outline-secondary">Alle taken</a>
+    </div>
+    <div class="dropdown float-end me-3">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filter
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-currentStatus="@ViewBag.ToDoStatus" class="dropdown-item">Te doen</a>
+            </li>
+            <li>
+                <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-currentStatus="@ViewBag.PausedStatus" class="dropdown-item">Gepauzeerd</a>
+            </li>
+            <li>
+                <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-currentStatus="@ViewBag.InProgressStatus" class="dropdown-item">Bezig</a>
+            </li>
+            <li>
+                <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-currentStatus="@ViewBag.DoneStatus" class="dropdown-item">Afgewerkt</a>
+            </li>
+            <li>
+                <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-currentStatus="@ViewBag.AllStatusWithDone" class="dropdown-item">Alle taken met afgewerkt</a>
+            </li>
+        </ul>
+    </div>
+    
+    @if (Model.PagedTasks.Any())
+    {
+        @Html.PagedListPager(Model.PagedTasks, page => Url.Action("Detail",
+            new
+            {
+                id = Model.Employee.Id, page, sortBy = ViewBag.CurrentSort, currentStatus = ViewBag.CurrentStatus
+            }),
+            new PagedListRenderOptions()
+
+            {
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                DisplayItemSliceAndTotal = false,
+                ContainerDivClasses = new[] { "navigation" },
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" },
+            })
+        
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+            <tr>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByName" asp-route-currentStatus= "@ViewBag.CurrentStatus">Naam</a>
+                </th>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByDuration" asp-route-currentStatus= "@ViewBag.CurrentStatus">Duur (min)</a>
+                </th>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByPriority" asp-route-currentStatus= "@ViewBag.CurrentStatus">Prioriteit</a>
+                </th>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByZone" asp-route-currentStatus= "@ViewBag.CurrentStatus">Zone</a>
+                </th>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByStatus" asp-route-currentStatus= "@ViewBag.CurrentStatus">Status</a>
+                </th>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Employee.Id" asp-route-page="@Model.PagedTasks.PageNumber" asp-route-sortBy="@ViewBag.SortByDatePlanned" asp-route-currentStatus= "@ViewBag.CurrentStatus">Geplande dag</a>
+                </th>
+                <th>
+                    Acties
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var task in Model.PagedTasks)
+            {
+                <tr>
+                    <td>@task.Name</td>
+                    <td>@task.Duration</td>
+                    <td>@task.Priority</td>
+                    <td><a asp-controller="Site" asp-action="DetailZone" asp-route-id=@task.Zone.Id>@task.Zone.Name</a></td>
+
+                    @{
+                            switch (task.Status)
+                            {
+                                case TaskStatus.ToDo:
+                                    <td>Te doen</td>
+                                    break;
+                                case TaskStatus.InProgress:
+                                    <td>Bezig</td>
+                                    break;
+                                case TaskStatus.Paused:
+                                    <td>Gepauzeerd</td>
+                                    break;
+                                case TaskStatus.Done:
+                                    <td>Afgewerkt</td>
+                                    break;
+                                default:
+                                    <td>@task.Status</td>
+                                    break;
+                            }
+                    }
+                    <td>@task.DatePlanned.ToShortDateString()</td>
+                    <td>
+                        <div class="w-100 btn-group" role="group">
+                            <a asp-controller="Dashboard" asp-action="Detail" asp-route-Id="@task.Id" class="btn btn-success mx-1">Details</a>
+                            <a asp-controller="Dashboard" asp-action="Update" asp-route-Id="@task.Id" class="btn btn-primary mx-1">Update</a>
+                            <button type="button" class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#deleteTaskModalEmployeeDetail-@task.Id">Verwijder</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+            
+        }
+        else
+        {
+            <p>Geen taken voor deze werknemer</p>
+        }
+     </div>
+     
+<div class="form-group row">
+    <div class="col-8 offset-2 row">
+        <div class="col">
+            <a asp-controller="Employee" asp-action="Index" class="btn btn-primary w-75">Terug naar werknemers</a> 
+        </div>
+        <div class="col">
+            <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteEmployeeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Werknemer: @Model.Employee.LastName @Model.Employee.FirstName verwijderen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bent u zeker dat u de werknemer: "@Model.Employee.LastName @Model.Employee.FirstName" wilt verwijderen?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+                <a asp-controller="Employee" asp-action="Delete" asp-route-Id="@Model.Employee.Id" class="btn btn-danger">Verwijder</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach (var task in Model.PagedTasks)
+{
+    <div class="modal fade" id="deleteTaskModalEmployeeDetail-@task.Id" tabindex="-1" aria-labelledby="exampleModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModal">Taak: @(task.Name) verwijderen</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bent u zeker dat u de taak: "@task.Name" wilt verwijderen?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+                    <a id="deleteButton" asp-controller="Dashboard" asp-action="Delete" asp-route-id="@task.Id" class="btn btn-danger">Verwijder</a> 
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}

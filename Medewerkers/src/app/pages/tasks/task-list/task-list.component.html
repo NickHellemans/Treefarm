@@ -1,0 +1,76 @@
+<ion-header *ngIf="!isScanActive">
+	<ion-toolbar>
+		<ion-title>Taken {{ (tasks !== null ? employee_fullName : "") }}</ion-title>
+		<ion-buttons slot="start">
+			<ion-menu-button></ion-menu-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<sidebar-menu></sidebar-menu>
+
+<ion-content>
+	<ion-refresher *ngIf="!isScanActive" slot="fixed" (ionRefresh)="ionRefresherHandler($event)">
+		<ion-refresher-content
+			pullingIcon="refresh-circle-outline"
+			pullingText="Taken opnieuw ophalen"
+		>
+		</ion-refresher-content>
+	</ion-refresher>
+
+	<div *ngIf="!isScanActive" class="" id="task-list">
+	
+		<date-picker [(dateSelected)]="dateSelected"></date-picker>	
+		<task-active [dateSelected]="dateSelected"></task-active>
+	
+		<div>
+			<ion-card>
+				<ion-accordion-group [multiple]="true" [value]="['toDo']">
+					<ion-accordion value="toDo">
+						<ion-item slot="header" color="light">
+							<ion-label>Gepland</ion-label>
+						</ion-item>
+						<div slot="content">
+							<table class="table table-striped  align-middle">
+								<thead>
+									<tr>
+										<th class="text-center">Naam</th>
+										<th class="text-center d-none d-md-table-cell">Zone</th>
+										<th class="text-center d-none d-md-table-cell">Prioriteit</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody *ngIf="tasks !== null">
+									<tr task-list-item *ngFor="let task of tasks | filterBy: getTaskFilter(0) | sort"
+										[task]="task" (click)="getTask(task.id)"></tr>
+								</tbody>
+							</table>
+						</div>
+					</ion-accordion>
+	
+					<ion-accordion value="second">
+						<ion-item slot="header" color="light">
+							<ion-label>Voltooid</ion-label>
+						</ion-item>
+						<div slot="content">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th class="text-center">Naam</th>
+										<th class="text-center d-md-table-cell">Zone</th>
+										<th class="text-center d-none d-md-table-cell">Prioriteit</th>
+									</tr>
+								</thead>
+								<tbody *ngIf="tasks !== null">
+									<tr task-list-item *ngFor="let task of tasks | filterBy: getTaskFilter(3) | sort"
+										[task]="task" (click)="getTask(task.id)"></tr>
+								</tbody>
+							</table>
+						</div>
+					</ion-accordion>
+				</ion-accordion-group>
+			</ion-card>
+		</div>
+	</div>
+</ion-content>
+<buttons-camera *ngIf="isScanActive"></buttons-camera>

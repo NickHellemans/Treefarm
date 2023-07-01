@@ -1,0 +1,97 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IPagedList<AnalyseVM>
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@using X.PagedList.Web.Common
+
+@{
+    ViewData["Title"] = "Statistieken";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6 mb-3">
+            <h2 class="text-primary">Analyse</h2>
+        </div>
+    </div>
+    <div class="mb-2">
+        <form asp-controller="Analyse" asp-action="Index">
+            <div class="input-group mb-3">
+                <input type="search" placeholder="Zoek op naam" name="searchBox" class="form-control"/>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-outline-secondary" asp-route-currentFilter= "@ViewBag.CurrentFilter">Zoek</button>
+                    <button asp-controller="Analyse" asp-action="Index" class="btn btn-outline-secondary">Alle werknemers</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    @if (Model.Any())
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy="@ViewBag.SortByName" asp-route-currentFilter= "@ViewBag.CurrentFilter">Naam</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy="@ViewBag.SortByAveragePause" asp-route-currentFilter= "@ViewBag.CurrentFilter">Gemiddelde pauze (min)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy="@ViewBag.SortByAverageDuration" asp-route-currentFilter= "@ViewBag.CurrentFilter">Gemiddelde duur (min)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy="@ViewBag.SortByTotalTasks" asp-route-currentFilter= "@ViewBag.CurrentFilter">Totaal aantal taken</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy="@ViewBag.SortByTotalTasksAboveDuration" asp-route-currentFilter= "@ViewBag.CurrentFilter">Aantal taken boven ingeplande duur</a>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Employee" asp-action="Detail" asp-route-id=@employee.EmployeeId>@employee.EmployeeName</a></td>
+                    <td>@employee.AverageTimePaused</td>
+                    <td>@employee.AverageDuration</td>
+                    <td>@employee.TotalTasks</td>
+                    <td>@employee.AboveDurationCounter</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        
+
+        <p class="text-muted">Totaal aantal werknemers: @Model.TotalItemCount</p>
+        
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortBy = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }),
+
+            new PagedListRenderOptions()
+
+            {
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                DisplayItemSliceAndTotal = false,
+
+                ContainerDivClasses = new[] { "navigation" },
+
+                LiElementClasses = new[] { "page-item" },
+
+                PageClasses = new[] { "page-link" },
+
+            })
+    }
+    else
+    {
+        <p>Geen werknemers gevonden!</p>
+    }
+    
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}

@@ -1,0 +1,76 @@
+﻿@using FluentValidation.Results
+@model AP.MyTreeFarm.Application.CQRS.Sites.UpdateSiteDTO
+
+@{
+    ViewData["Title"] = "Aanpassen site";
+}
+
+<h2 class="text-primary"> Site aanpassen</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+<form method="post" asp-controller="Site" asp-action="Update" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label" asp-for="Name">Naam</label>
+        <input asp-for="Name" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="PostalCode">Postcode</label>
+        <input asp-for="PostalCode" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="PostalCode"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Street">Straat</label>
+        <input asp-for="Street" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="Street"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="StreetNumber">Huisnummer</label>
+        <input asp-for="StreetNumber" type="text" class="form-control"/>
+        <span class="text-danger" asp-validation-for="StreetNumber"></span>
+    </div>
+    <div class="mb-3">
+        <h3 class="text-primary">Plattegrond</h3>
+
+        <div class="form-group">
+            <input asp-for="MapPicturePath" readonly type="text" id="disabledTextInput" class="form-control"/>
+        </div>
+
+        @if (@Model.MapPicturePath.Length > 0)
+        {
+            <img src="/images/siteImages/@Model.MapPicturePath"/>
+        }
+        else
+        {
+            <p>Geen plattegrond gevonden</p>
+        }
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nieuwe plattegrond uploaden (.jpg/.png/.jpeg)</label>
+        <input type="file" class="form-control" name="mapFile"/>
+        <span class="text-danger" asp-validation-for="MapPicturePath"></span>
+    </div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-75">Pas aan</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+        </div>
+    </div>
+</form>

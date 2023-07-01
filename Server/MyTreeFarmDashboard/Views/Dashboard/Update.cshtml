@@ -1,0 +1,93 @@
+﻿@using FluentValidation.Results
+@model UpdateTaskVM
+
+@{
+    ViewData["Title"] = "Aanpassen taak";
+}
+
+<h2 class="text-primary"> Taak aanpassen</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+<form asp-controller="Dashboard" asp-action="Update" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="TreeTask.Name">Naam</label>
+        <input asp-for="TreeTask.Name" class="form-control"/>
+        <span class="text-danger" asp-validation-for="TreeTask.Name"></span>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="TreeTask.Description">Uitleg</label>
+        <textarea asp-for="TreeTask.Description" class="form-control"></textarea>
+        <span class="text-danger" asp-validation-for="TreeTask.Description"></span>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="TreeTask.Priority">Prioriteit</label>
+        <input asp-for="TreeTask.Priority" type="number" class="form-control"></input>
+        <span class="text-danger" asp-validation-for="TreeTask.Priority"></span>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="TreeTask.DatePlanned">Geplande datum</label>
+        <input type="date" asp-for="TreeTask.DatePlanned" class="form-control"/>
+        <span class="text-danger" asp-validation-for="TreeTask.DatePlanned"></span>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="TreeTask.Duration">Duur (min)</label>
+        <input asp-for="TreeTask.Duration" class="form-control"/>
+        <span class="text-danger" asp-validation-for="TreeTask.Duration"></span>
+
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selecteer werknemer</label>
+        <select class="form-select mb-1" asp-items="Model.Employees" asp-for="TreeTask.EmployeeId"></select>
+        <a asp-controller="Employee" asp-action="Create" class="btn btn-info text-light">Werknemer aanmaken</a>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selecteer zone</label>
+        <select class="form-select mb-1" asp-items="Model.Zones" asp-for="TreeTask.ZoneId"></select>
+        <a asp-controller="Site" asp-action="Index" class="btn btn-info text-light">Zone aanmaken</a>
+    </div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" asp-route-Id="@Model.TreeTask.Id" class="btn btn-primary w-75">Pas aan</button>
+            </div>
+            <div class="col">
+                <a asp-action="Index" class="btn btn-danger w-75">Lijst van taken</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+
+        </div>
+    </div>
+
+    @{
+        for (int i = 0; i < Model.Employees.Count; i++)
+        {
+            @Html.HiddenFor(m => m.Employees[i].Text)
+            @Html.HiddenFor(m => m.Employees[i].Value)
+        }
+        for (int i = 0; i < Model.Zones.Count; i++)
+        {
+            @Html.HiddenFor(m => m.Zones[i].Text)
+            @Html.HiddenFor(m => m.Zones[i].Value)
+        }
+    }
+
+</form>

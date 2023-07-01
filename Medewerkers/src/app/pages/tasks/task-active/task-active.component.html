@@ -1,0 +1,13 @@
+<div *ngIf="showItem">
+	<ion-card (click)="getTaskDetails()">
+		<ion-card-header>
+			<ion-card-title>Actief</ion-card-title>
+			<ion-card-subtitle>{{ task.name }}</ion-card-subtitle>
+		</ion-card-header>
+	
+		<ion-card-content>
+			<task-button-pause size="small" [task]="task"></task-button-pause>
+			<task-button-start size="small" [task]="task"></task-button-start>
+		</ion-card-content>
+	</ion-card>
+</div>

@@ -1,0 +1,6 @@
+<td class="text-center"> {{ task.name }} </td>
+<td class="text-center {{ buttonStyle }} d-md-table-cell"> {{ task.zone.name }} </td>
+<td class="text-center d-none d-md-table-cell"> {{ task.priority }}</td>
+<td *ngIf="showButton" class="text-center">
+	<task-button-start size="small" [task]="task"></task-button-start>
+</td>

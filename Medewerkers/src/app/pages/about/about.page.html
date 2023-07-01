@@ -1,0 +1,33 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button></ion-back-button>
+		</ion-buttons>
+		<ion-title>About</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<div class="container-fluid">
+		<div class="row py-2">
+			<div class="col-4">App Name:</div>
+			<div class="col-8">{{ appInfo.name }}</div>
+		</div>
+		<div class="row py-2">
+			<div class="col-4">Version:</div>
+			<div class="col-8">{{ appInfo.version }}</div>
+		</div>
+		<div class="row py-2">
+			<div class="col-4">Owner:</div>
+			<div class="col-8">{{ owner }}</div>
+		</div>
+		<div class="row py-2">
+			<div class="col-4">Developers:</div>
+			<div class="col-8">
+				<p *ngFor="let developer of developers" class="m-0" (click)="onClick(developer)">{{ developer }}</p>
+			</div>
+		</div>
+	</div>
+
+	<img *ngIf="showEasterEgg" src="{{easterEggUrl}}">
+</ion-content>

@@ -1,0 +1,51 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button (click)="goBack($event)"></ion-back-button>
+		</ion-buttons>
+		<ion-title>{{ task.name }}</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-card>
+		<ion-card-header>
+			<ion-card-title>{{ task.name }}</ion-card-title>
+		</ion-card-header>
+
+		<ion-card-content>
+			<div class="row py-2">
+				<div class="col-4">Zone:</div>
+				<div class="col-8">{{ task.zone.name }}</div>
+			</div>
+			<div class="row py-2">
+				<div class="col-4">Status:</div>
+				<div class="col-8">{{ task_status }}</div>
+			</div>
+			<div class="row py-2">
+				<div class="col-4">Duur (minuten):</div>
+				<div class="col-8">{{ task.duration }}</div>
+			</div>
+			<div class="row py-2">
+				<div class="col-4">Prioriteit:</div>
+				<div class="col-8">{{ task.priority }}</div>
+			</div>
+
+			<div class="row py-2">
+				<div class="col-4">Beschrijving:</div>
+				<div class="col-8">{{ task.description }}</div>
+			</div>
+		</ion-card-content>
+	</ion-card>
+	<div class="d-flex justify-content-center my-1">
+		<ion-button shape="round"  (click)="openInstructions()">
+			<ion-icon name="open-outline"  slot="end"></ion-icon>
+			Instructies
+		</ion-button>
+	</div>
+
+	<div class="d-flex justify-content-center my-1">
+		<task-button-start shape="round" [task]="task"></task-button-start>
+		<task-button-pause shape="round" [task]="task"></task-button-pause>
+	</div>
+</ion-content>

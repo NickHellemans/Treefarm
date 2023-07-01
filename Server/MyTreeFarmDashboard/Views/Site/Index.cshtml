@@ -1,0 +1,114 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<AP.MyTreeFarm.Application.CQRS.Sites.SiteDTO>
+
+@{
+    ViewData["Title"] = "Sites";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        @if (TempData["AlertSuccess"] != null)
+         {
+             <div class="alert alert-success" role="alert">
+                 @TempData["AlertSuccess"]
+             </div>
+         }
+        
+        @if (TempData["AlertError"] != null)
+         {
+             <div class="alert alert-danger" role="alert">
+                 @TempData["AlertError"]
+             </div>
+         }
+        <div class="col-6 mb-3">
+            <h2 class="text-primary">Sites</h2>
+            <a asp-controller="Site" asp-action="Create" class="btn btn-primary">Site toevoegen</a>
+        </div>
+    </div>
+                    <div class="mb-2">
+                        <form asp-controller="Site" asp-action="Index">
+                            <div class="input-group mb-3">
+                                <input type="search" placeholder="Zoek op naam, straat of postcode" name="searchBox" class="form-control"/>
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-outline-secondary" asp-route-currentFilter= "@ViewBag.CurrentFilter">Zoek</button>
+                                    <button asp-controller="Site" asp-action="Index" class="btn btn-outline-secondary">Alle sites</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+        @if(Model.Any())
+        {
+            <table class="table table-bordered table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortBySiteName" asp-route-currentFilter= "@ViewBag.CurrentFilter">Naam</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByPostalCode" asp-route-currentFilter= "@ViewBag.CurrentFilter">Postcode</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByStreet" asp-route-currentFilter= "@ViewBag.CurrentFilter">Straat</a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-page="@Model.PageNumber" asp-route-sortBy= "@ViewBag.SortByStreetNumber" asp-route-currentFilter= "@ViewBag.CurrentFilter">Huisnummer</a>
+                    </th>
+                    <th>
+                        Acties
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach(var site in Model)
+                {
+                    <tr>
+                        <td>@site.Name</td>
+                        <td>@site.PostalCode</td>
+                        <td>@site.Street</td>
+                        <td>@site.StreetNumber</td>
+                        <td>
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Site" asp-action="Detail" asp-route-Id="@site.Id" class="btn btn-success mx-1">Detail</a>
+                                <a asp-controller="Site" asp-action="Update" asp-route-Id="@site.Id" class="btn btn-primary mx-1">Update</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            
+            <p class="text-muted">Totaal aantal sites: @Model.TotalItemCount</p>
+        
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortBy = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }),
+
+                new PagedListRenderOptions()
+
+                {
+                    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                    DisplayItemSliceAndTotal = false,
+
+                    ContainerDivClasses = new[] { "navigation" },
+
+                    LiElementClasses = new[] { "page-item" },
+
+                    PageClasses = new[] { "page-link" },
+
+                })
+        }
+        else
+        {
+            <p>Geen sites gevonden!</p>
+        }
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}
+

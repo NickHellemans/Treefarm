@@ -1,0 +1,125 @@
+﻿@model AP.MyTreeFarm.Application.CQRS.TreeTasks.TreeTaskDTO
+@using TaskStatus = AP.MyTreeFarm.Domain.TaskStatus
+
+@{
+    ViewData["Title"] = "Detail taak";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">@Model.Name</h2>
+            <a asp-controller="Dashboard" asp-action="Update" asp-route-Id="@Model.Id" class="btn btn-primary">Update</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTaskModal">Verwijder</button>
+        </div>
+    </div>
+    <br />
+    <table class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        <tr>
+            <th>
+                Duur (min)
+            </th>
+            <th>
+                Werknemer
+            </th>
+            <th>
+                Zone
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Prioriteit
+            </th>
+            <th>
+                Datum creatie
+            </th>
+            <th>
+                Datum start
+            </th>
+            <th>
+                Datum stop
+            </th>
+            <th>
+                Datum gepland
+            </th>
+            
+            <th>
+                Tijd gepauzeerd (min)
+            </th>
+                                         
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>@Model.Duration</td>
+            <td><a asp-controller="Employee" asp-action="Detail" asp-route-id=@Model.Employee.Id>@Model.Employee.FirstName @Model.Employee.LastName</a></td>
+            <td><a asp-controller="Site" asp-action="DetailZone" asp-route-id=@Model.Zone.Id>@Model.Zone.Name</a></td>
+            @{
+                    switch (Model.Status)
+                    {
+                        case TaskStatus.ToDo:
+                            <td>Te doen</td>
+                            break;
+                        case TaskStatus.InProgress:
+                            <td>Bezig</td>
+                            break;
+                        case TaskStatus.Paused:
+                            <td>Gepauzeerd</td>
+                            break;
+                        case TaskStatus.Done:
+                            <td>Afgewerkt</td>
+                            break;
+                        default:
+                            <td>@Model.Status</td>
+                            break;
+                    }
+            }
+            
+            <td>@Model.Priority</td>
+            <td>@Model.DateCreated</td>
+            <td>@(Model.DateStart != null? Model.DateStart : "Nog niet gestart")</td>
+            <td>@(Model.DateEnd != null? Model.DateEnd : "Nog niet gestopt")</td>
+            <td>@Model.DatePlanned.ToShortDateString()</td>
+            <td>@(Math.Round(Model.TimePaused/60)) min</td>
+            
+        </tr>
+        </tbody>
+    </table>
+    
+    <h2 class="text-primary" >Notities</h2>
+    <div class="mb-3">@Model.Description</div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+    
+            <div class="col">
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary w-75">Terug naar taken</a>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+                
+        </div>
+    </div>
+</div>
+
+ <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="exampleModal" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h1 class="modal-title fs-5" id="exampleModal">Taak: @Model.Name verwijderen</h1>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+       </div>
+       <div class="modal-body">
+         Bent u zeker dat u de taak: "@Model.Name" wilt verwijderen?
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+         <a asp-controller="Dashboard" asp-action="Delete" asp-route-Id="@Model.Id" class="btn btn-danger">Verwijder</a>
+       </div>
+     </div>
+   </div>
+ </div>
+
+

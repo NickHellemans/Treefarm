@@ -1,0 +1,15 @@
+<div class="container-custom container-fluid h-100 row flex-column p-0 m-0" >
+	<div class="col-8"></div>
+	<div class="col-4 mx-auto d-flex justify-content-center align-items-center">
+		<div class="button-camera px-custom">
+			<ion-button shape="circle" color="{{isTorchActive ? 'light' : 'dark'}}" (click)="toggleTorch()">
+				<ion-icon slot="icon-only" name="flashlight"></ion-icon>
+			</ion-button>
+		</div>
+		<div class="button-camera px-custom">
+			<ion-button shape="circle" color="dark" (click)="scannerStop()">
+				<ion-icon slot="icon-only" name="close-outline"></ion-icon>
+			</ion-button>
+		</div>
+	</div>
+</div>

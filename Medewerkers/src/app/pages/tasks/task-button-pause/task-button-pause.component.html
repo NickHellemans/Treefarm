@@ -1,0 +1,8 @@
+<ion-button
+	*ngIf="showButton === true"
+	size="{{size}}" shape ="{{shape}}"
+	(click)="updateTaskStatus($event)"
+>
+	<ion-icon name="{{ionIcon_shape}}" slot="start"></ion-icon>
+	{{ buttonText }}
+</ion-button>

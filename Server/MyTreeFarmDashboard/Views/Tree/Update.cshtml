@@ -1,0 +1,80 @@
+﻿@model AP.MyTreeFarm.Application.CQRS.Trees.TreeDTO
+@using FluentValidation.Results
+@{
+    ViewData["Title"] = "Aanpassen boom";
+}
+
+<h2 class="text-primary"> Boom aanpassen</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+<form method="post" asp-controller="Tree" asp-action="Update" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label" asp-for="Name">Naam</label>
+        <input asp-for="Name" type="text" class="form-control"/>
+    </div>
+
+    <div class="mb-3">
+        <h3 class="text-primary">Instructies</h3>
+
+        <div class="form-group mb-3">
+            <input asp-for="InstructionsUrl" readonly type="text" id="disabledTextInput" class="form-control"/>
+        </div>
+
+        @if (@Model.InstructionsUrl.Length > 0)
+        {
+            <a asp-controller="Download" asp-action="GetInstructions" asp-route-filename="@Model.InstructionsUrl" target="_blank" class="btn btn-info mx-1 text-light">Instructies downloaden</a>
+        }
+        else
+        {
+            <p>Geen instructies gevonden</p>
+        }
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nieuwe instructies uploaden (.pdf)</label>
+        <input type="file" class="form-control" name="instructionsFile"/>
+    </div>
+    <div class="mb-3">
+        <h3 class="text-primary">Foto</h3>
+
+        <div class="form-group mb-3">
+            <input asp-for="PictureUrl" readonly type="text" id="disabledTextInput" class="form-control"/>
+        </div>
+
+        @if (@Model.PictureUrl.Length > 0)
+        {
+            <img src="/images/treeImages/@Model.PictureUrl"/>
+        }
+        else
+        {
+            <p>Geen foto gevonden</p>
+        }
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nieuwe foto uploaden (.jpg/.png/.jpeg)</label>
+        <input type="file" class="form-control" name="pictureFile"/>
+    </div>
+    
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-75">Pas aan</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+        </div>
+    </div>
+</form>

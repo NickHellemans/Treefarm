@@ -1,0 +1,193 @@
+﻿@using X.PagedList.Web.Common
+@using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model SiteVM
+       
+       @{
+           ViewData["Title"] = "Detail Site";
+       }
+       
+       <div class="container p-3">
+           <div class="row pt-4">
+               @if (TempData["AlertSuccess"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["AlertSuccess"]
+                    </div>
+                }
+               
+               @if (TempData["AlertError"] != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["AlertError"]
+                    </div>
+                }
+               <div class="col-6">
+                   <h2 class="text-primary">@Model.Site.Name</h2>
+                   <a asp-controller="Site" asp-action="Update" asp-route-Id="@Model.Site.Id" class="btn btn-primary">Update</a>
+                   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteSiteModal">Verwijder</button>
+               </div>
+           </div>
+           <br />
+           <table class="table table-bordered table-striped" style="width:100%">
+               <thead>
+                <tr>
+                    <th>
+                        Postcode
+                    </th>
+                    <th>
+                        Straat
+                    </th>
+                    <th>
+                        Huisnummer
+                    </th>
+                </tr>
+               </thead>
+               <tbody>
+               <tr>
+                   <td>@Model.Site.PostalCode</td>
+                   <td>@Model.Site.Street</td>
+                   <td>@Model.Site.StreetNumber</td>
+               </tr>
+               </tbody>
+           </table>
+           
+           <h3 class="text-primary">Zones</h3>
+           <a asp-controller="Site" asp-action="CreateZone" asp-route-siteId="@Model.Site.Id" asp-route-siteName="@Model.Site.Name" class="btn btn-primary">Voeg zone toe</a>
+           @if(Model.PagedZones.Any())
+        {
+            <p class="text-muted">Totaal aantal zones: @Model.PagedZones.TotalItemCount</p>
+        
+            @Html.PagedListPager(Model.PagedZones, page => Url.Action("Detail", 
+                new
+                {
+                    id = Model.Site.Id, page, sortBy = ViewBag.CurrentSort
+                }),
+
+                new PagedListRenderOptions()
+
+                {
+                    DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                    DisplayItemSliceAndTotal = false,
+
+                    ContainerDivClasses = new[] { "navigation" },
+
+                    LiElementClasses = new[] { "page-item" },
+
+                    PageClasses = new[] { "page-link" },
+
+                })
+            <table class="table table-bordered table-striped" style="width:100%">
+                <thead>
+                <tr>
+                    <th>
+                        <a asp-action="Detail" asp-route-id="@Model.Site.Id" asp-route-page="@Model.PagedZones.PageNumber" asp-route-sortBy= "@ViewBag.SortByZoneName">Naam</a>
+                    </th>
+                    <th>
+                        <a asp-action="Detail" asp-route-id="@Model.Site.Id" asp-route-page="@Model.PagedZones.PageNumber" asp-route-sortBy= "@ViewBag.SortBySurfaceArea">Oppervlakte (m²)</a>
+                    </th>
+                    <th>
+                        <a asp-action="Detail" asp-route-id="@Model.Site.Id" asp-route-page="@Model.PagedZones.PageNumber" asp-route-sortBy= "@ViewBag.SortByTree">Boomsoort</a>
+                    </th>
+                    <th>
+                        Acties
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach(var zone in Model.PagedZones)
+                {
+                    <tr>
+                        <td>@zone.Name</td>
+                        <td>@zone.SurfaceArea</td>
+                        <td><a asp-controller="Tree" asp-action="Detail" asp-route-Id="@zone.Tree.Id">@zone.Tree.Name</a></td>
+                        <td>
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Site" asp-action="DetailZone" asp-route-Id="@zone.Id" class="btn btn-success mx-1">Details</a>
+                                <a asp-controller="Site" asp-action="UpdateZone" asp-route-Id="@zone.Id"  asp-route-siteId="@Model.Site.Id" asp-route-siteName="@Model.Site.Name" class="btn btn-primary mx-1">Update</a>
+                                <button type="button" class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#deleteZoneModal-@zone.Id">Verwijder</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            
+        }
+        else
+        {
+            <p>Geen zones voor deze site</p>
+        }
+           <div class="mb-3">
+               <h3 class="text-primary">Plattegrond</h3>
+               @if (@Model.Site.MapPicturePath.Length > 0)
+               {
+               <img src="/images/siteImages/@Model.Site.MapPicturePath"/>
+               }
+               else
+               {
+                   <p>Geen plattegrond gevonden</p>
+               }
+           </div>
+
+           </div>
+             <div class="form-group row">
+                   <div class="col-8 offset-2 row">
+               
+                       <div class="col">
+                           <a asp-controller="Site" asp-action="Index" class="btn btn-primary w-75">Terug naar sites</a> 
+                       </div>
+                       <div class="col">
+                           <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+                       </div>
+                           
+                   </div>
+               </div>
+ 
+<div class="modal fade" id="deleteSiteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Site: @Model.Site.Name verwijderen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bent u zeker dat u de site: "@Model.Site.Name" wilt verwijderen?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+                <a asp-controller="Site" asp-action="Delete" asp-route-Id="@Model.Site.Id" asp-route-filename="@Model.Site.MapPicturePath" class="btn btn-danger">Verwijder</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@foreach (var zone in Model.PagedZones)
+{
+    <div class="modal fade" id="deleteZoneModal-@zone.Id" tabindex="-1" aria-labelledby="exampleModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModal">Zone: @(zone.Name) verwijderen</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bent u zeker dat u de zone: "@zone.Name" op site "@Model.Site.Name" wilt verwijderen?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+                    <a id="deleteButton" asp-controller="Site" asp-action="DeleteZone" asp-route-id="@zone.Id" asp-route-siteId="@Model.Site.Id" class="btn btn-danger">Verwijder</a> 
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}

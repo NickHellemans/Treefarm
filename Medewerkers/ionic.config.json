@@ -1,0 +1,7 @@
+{
+	"name": "Bomen",
+	"integrations": {
+		"capacitor": {}
+	},
+	"type": "angular"
+}

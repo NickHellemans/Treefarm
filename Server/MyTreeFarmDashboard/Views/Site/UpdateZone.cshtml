@@ -1,0 +1,58 @@
+﻿@using FluentValidation.Results
+@model UpdateZoneVM
+
+@{
+    ViewData["Title"] = "Aanpassen zone";
+}
+
+<h2 class="text-primary"> Zone aanpassen aan site: @Model.SiteName</h2>
+@{
+    @if (ViewData["Errors"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach (var error in ViewData["Errors"] as IList<ValidationFailure>)
+                {
+                    <li>
+                        @error.ErrorMessage
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+<form asp-controller="Site" asp-action="UpdateZone" method="post">
+    <div class="mb-3">
+        <label class="form-label" asp-for="Zone.Name">Naam</label>
+        <input asp-for="Zone.Name" class="form-control"/>
+        <span class="text-danger" asp-validation-for="Zone.Name"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" asp-for="Zone.SurfaceArea">Oppervlakte (m²)</label>
+        <input asp-for="Zone.SurfaceArea" type="number" class="form-control"/>
+         <span class="text-danger" asp-validation-for="Zone.SurfaceArea"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selecteer boomsoort</label>
+        <select class="form-select mb-1" asp-items="Model.Trees" asp-for="Zone.TreeId"></select>
+        <a asp-controller="Tree" asp-action="Create" class="btn btn-info text-light">Boomsoort aanmaken</a>
+    </div>
+    <div class="form-group row">
+        <div class="col-8 offset-2 row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-75" asp-route-id="@Model.Zone.Id" asp-route-siteId="@Model.SiteId">Pas aan</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+            </div>
+        </div>
+    </div>
+    
+    @{
+        for(int i = 0; i < Model.Trees.Count; i++)
+        {
+            @Html.HiddenFor(m => m.Trees[i].Text)
+            @Html.HiddenFor(m => m.Trees[i].Value)
+        }
+    }
+</form>

@@ -1,0 +1,184 @@
+﻿@using X.PagedList.Web.Common
+@using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model TreeVM
+
+@{
+    ViewData["Title"] = "Detail Tree";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">@Model.Tree.Name</h2>
+            <a asp-controller="Tree" asp-action="Update" asp-route-Id="@Model.Tree.Id" class="btn btn-primary">Update</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTreeModal">Verwijder</button>
+        </div>
+    </div>
+    <br/>
+    <table class="table table-bordered table-striped" style="width:100%">
+        <thead>
+        <tr>
+            <th>
+                Foto
+            </th>
+            <th>
+                Instructies
+            </th>
+            <th>
+                QR-code
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>@Model.Tree.PictureUrl</td>
+            <td>
+                <a asp-controller="Download" asp-action="GetInstructions" asp-route-filename="@Model.Tree.InstructionsUrl" target="_blank"  class="btn btn-info mx-1 text-light">@Model.Tree.InstructionsUrl</a>
+            </td>
+             <td>
+                 <a asp-controller="Download" asp-action="GetQrcode" asp-route-filename="@Model.Tree.QrCodeUrl" class="btn btn-info mx-1 text-light">@Model.Tree.QrCodeUrl</a>
+                 </td>
+        </tr>
+        </tbody>
+    </table>
+    <h3 class="text-primary">Zones</h3>
+    @if (Model.PagedZones.Any())
+    {
+        <p class="text-muted">Totaal aantal zones: @Model.PagedZones.TotalItemCount</p>
+        
+        @Html.PagedListPager(Model.PagedZones, page => Url.Action("Detail", 
+            new
+            {
+                id = Model.Tree.Id, page, sortBy = ViewBag.CurrentSort
+            }),
+
+            new PagedListRenderOptions()
+
+            {
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                DisplayItemSliceAndTotal = false,
+
+                ContainerDivClasses = new[] { "navigation" },
+
+                LiElementClasses = new[] { "page-item" },
+
+                PageClasses = new[] { "page-link" },
+
+            })
+        
+        <table class="table table-bordered table-striped" style="width:100%">
+            <thead>
+            <tr>
+                <th>
+                    <a asp-action="Detail" asp-route-id="@Model.Tree.Id" asp-route-page="@Model.PagedZones.PageNumber" asp-route-sortBy= "@ViewBag.SortByZoneName">Naam</a>
+                </th>
+                <th>
+                     <a asp-action="Detail" asp-route-id="@Model.Tree.Id" asp-route-page="@Model.PagedZones.PageNumber" asp-route-sortBy= "@ViewBag.SortBySurfaceArea">Oppervlakte</a>
+                </th>
+                <th>
+                    Acties
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var zone in Model.PagedZones)
+            {
+                <tr>
+                    <td>@zone.Name</td>
+                    <td>@zone.SurfaceArea</td>
+                    <td>
+                        <div class="w-100 btn-group" role="group">
+                            <a asp-controller="Site" asp-action="DetailZone" asp-route-Id="@zone.Id" class="btn btn-success mx-1">Details</a>
+                            <a asp-controller="Site" asp-action="UpdateZone" asp-route-Id="@zone.Id" asp-route-siteId="@Model.Tree.Id" asp-route-siteName="@Model.Tree.Name" class="btn btn-primary mx-1">Update</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Deze boom staat nog nergens geplant!</p>
+    }
+
+    <div class="mb-3">
+        <h3 class="text-primary">Instructies</h3>
+        @if (@Model.Tree.PictureUrl.Length > 0)
+        {
+            <a asp-controller="Download" asp-action="GetInstructions" asp-route-filename="@Model.Tree.InstructionsUrl" target="_blank"  class="btn btn-info mx-1 text-light">Instructies downloaden</a>
+        }
+        else
+        {
+            <p>Geen instructies gevonden</p>
+        }
+    </div>
+
+    <div class="mb-3">
+        <h3 class="text-primary">Identificatie foto</h3>
+        @if (@Model.Tree.PictureUrl.Length > 0)
+        {
+            <img src="/images/treeImages/@Model.Tree.PictureUrl"/>
+        }
+        else
+        {
+            <p>Geen foto gevonden</p>
+        }
+    </div>
+    <div class="mb-3">
+        <h3 class="text-primary">QR-code</h3>
+        @if (@Model.Tree.QrCodeUrl.Length > 0)
+        {
+            <a asp-controller="Download" asp-action="GetQrCode" asp-route-filename="@Model.Tree.QrCodeUrl"  class="btn btn-info mx-1 text-light">Qr-code downloaden</a>
+        }
+        else
+        {
+            <p>Geen QR-code gevonden</p>
+        }
+    </div>
+      </div>
+                <div class="form-group row">
+                    <div class="col-8 offset-2 row">
+                              
+                        <div class="col">
+                            <a asp-controller="Tree" asp-action="Index" class="btn btn-primary w-75">Terug naar bomen</a>
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-danger w-75" href="javascript: history.go(-1);">Terug</a>
+                        </div>
+                    </div>
+                    </div>
+
+<div class="modal fade" id="deleteTreeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Boomsoort: @Model.Tree.Name verwijderen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bent u zeker dat u de boomsoort: "@Model.Tree.Name" wilt verwijderen?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nee</button>
+                <a asp-controller="Tree" asp-action="Delete" asp-route-Id="@Model.Tree.Id"
+                   asp-route-pictureUrl="@Model.Tree.PictureUrl"
+                   asp-route-instructionsUrl="@Model.Tree.InstructionsUrl"
+                   asp-route-qrUrl="@Model.Tree.QrCodeUrl"
+                   class="btn btn-danger">
+                    Verwijder
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+    $(document).ready(function () {
+       $('ul.pagination > li.disabled > a ').addClass('page-link'); 
+    });
+    </script>
+}
